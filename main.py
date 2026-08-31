@@ -5,9 +5,13 @@ Ponto de entrada principal — executa o ETL e inicia o dashboard.
 """
 import argparse
 from datetime import date, timedelta
-from loguru import logger
-from models.database import create_tables
-from etl.pipeline import ETLPipeline
+try:
+    from loguru import logger
+except Exception:
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger("app")
+from database import create_tables
 
 
 def parse_args():
@@ -40,6 +44,9 @@ def main():
         fim    = args.fim    or date.today()
         inicio = args.inicio or (fim - timedelta(days=args.dias))
         logger.info(f"Executando ETL: {inicio} → {fim}")
+        # Import pipeline lazily to avoid importing integrations on simple commands
+        from pipeline import ETLPipeline
+
         pipeline = ETLPipeline()
         pipeline.run(inicio, fim)
 

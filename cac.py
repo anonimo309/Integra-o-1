@@ -1,7 +1,12 @@
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Optional
-from loguru import logger
+try:
+    from loguru import logger
+except Exception:
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger("cac")
 
 
 @dataclass

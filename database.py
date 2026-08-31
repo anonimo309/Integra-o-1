@@ -4,7 +4,15 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from datetime import datetime
-from config.settings import settings
+try:
+    from config.settings import settings
+except Exception:
+    # Fallback minimal settings when config package is missing (local run)
+    class _FallbackSettings:
+        database_url = "sqlite:///./local.db"
+        etl_lookback_days = 30
+
+    settings = _FallbackSettings()
 
 Base = declarative_base()
 engine = create_engine(settings.database_url)
